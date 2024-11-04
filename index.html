@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>تعاريف كيمياء 2-1</title>
+        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+        <style>
+            :root {
+                --primary-color: #3b82f6;
+                --secondary-color: #1d4ed8;
+                --success-color: #059669;
+                --error-color: #dc2626;
+                --background-dark: #1e293b;
+                --background-light: #334155;
+                --text-light: #f8fafc;
+                --text-dark: #94a3b8;
+                --card-bg: #283548;
+                --card-hover: #374151;
+                --transition-speed: 0.3s;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: "Tajawal", sans-serif;
+            }
+
+            body {
+                background: var(--background-dark);
+                min-height: 100vh;
+                padding: 1.5rem;
+                color: var(--text-light);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .container {
+                max-width: 1400px;
+                width: 100%;
+                background: var(--background-light);
+                padding: 2rem;
+                border-radius: 1rem;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            }
+
+            .header {
+                text-align: center;
+                margin-bottom: 2rem;
+            }
+
+            .header h1 {
+                color: var(--primary-color);
+                font-size: 2.5rem;
+                margin-bottom: 0.5rem;
+                font-weight: 700;
+            }
+
+            .subtitle {
+                color: var(--text-dark);
+                font-size: 1.1rem;
+            }
+
+            .stats {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-bottom: 2rem;
+            }
+
+            .score-container {
+                background: var(--card-bg);
+                padding: 1rem 2rem;
+                border-radius: 0.75rem;
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                border: 2px solid rgba(59, 130, 246, 0.2);
+            }
+
+            .score-label {
+                color: var(--text-dark);
+                font-size: 1.2rem;
+                font-weight: 500;
+            }
+
+            .score-value {
+                color: var(--primary-color);
+                font-size: 1.5rem;
+                font-weight: 700;
+                min-width: 3ch;
+                text-align: center;
+            }
+
+            .game-container {
+                margin-bottom: 2rem;
+            }
+
+            .terms-grid {
+                display: grid;
+                grid-template-columns: repeat(6, 1fr);
+                gap: 0.75rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .definitions-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.75rem;
+            }
+
+            .term-item,
+            .definition-item {
+                background: var(--card-bg);
+                padding: 0.75rem;
+                border-radius: 0.5rem;
+                cursor: pointer;
+                transition: all var(--transition-speed) ease;
+                min-height: 70px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                font-size: 0.9rem;
+                line-height: 1.4;
+                position: relative;
+                overflow: hidden;
+                word-wrap: break-word;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.05);
+            }
+
+            .term-item:hover,
+            .definition-item:hover {
+                background: var(--card-hover);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            .term-item::before,
+            .definition-item::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+                transform: translateX(-100%);
+                transition: transform 0.6s ease;
+            }
+
+            .term-item:hover::before,
+            .definition-item:hover::before {
+                transform: translateX(100%);
+            }
+
+            .selected {
+                background: var(--primary-color) !important;
+                color: white;
+                transform: scale(1.02);
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+                border: 2px solid var(--secondary-color);
+            }
+
+            .matched {
+                background: var(--success-color) !important;
+                color: white;
+                cursor: default;
+                animation: matchSuccess 0.5s ease;
+                border: none;
+            }
+
+            .wrong {
+                background: var(--error-color) !important;
+                animation: wrongShake 0.5s ease;
+            }
+
+            @keyframes matchSuccess {
+                0% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.05);
+                }
+                100% {
+                    transform: scale(1);
+                }
+            }
+
+            @keyframes wrongShake {
+                0%,
+                100% {
+                    transform: translateX(0);
+                }
+                25% {
+                    transform: translateX(-5px);
+                }
+                75% {
+                    transform: translateX(5px);
+                }
+            }
+
+            .button {
+                display: block;
+                margin: 2rem auto 0;
+                padding: 0.75rem 2.5rem;
+                background: var(--primary-color);
+                color: white;
+                border: none;
+                border-radius: 0.5rem;
+                font-size: 1.1rem;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all var(--transition-speed) ease;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            .button:hover {
+                background: var(--secondary-color);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            }
+
+            .button:active {
+                transform: translateY(0);
+            }
+
+            /* Media Queries */
+            @media (max-width: 1400px) {
+                .terms-grid {
+                    grid-template-columns: repeat(4, 1fr);
+                }
+            }
+
+            @media (max-width: 1024px) {
+                .container {
+                    padding: 1.5rem;
+                }
+
+                .terms-grid {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+
+                .definitions-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+
+                .header h1 {
+                    font-size: 2rem;
+                }
+            }
+
+            @media (max-width: 768px) {
+                body {
+                    padding: 1rem;
+                }
+
+                .container {
+                    padding: 1rem;
+                }
+
+                .terms-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 0.5rem;
+                }
+
+                .definitions-grid {
+                    grid-template-columns: repeat(1, 1fr);
+                    gap: 0.5rem;
+                }
+
+                .term-item,
+                .definition-item {
+                    min-height: 60px;
+                    font-size: 0.85rem;
+                    padding: 0.5rem;
+                }
+
+                .score-container {
+                    padding: 0.75rem 1.5rem;
+                }
+
+                .score-label {
+                    font-size: 1rem;
+                }
+
+                .score-value {
+                    font-size: 1.25rem;
+                }
+
+                .button {
+                    padding: 0.6rem 2rem;
+                    font-size: 1rem;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .header h1 {
+                    font-size: 1.5rem;
+                }
+
+                .subtitle {
+                    font-size: 0.9rem;
+                }
+            }
+
+            /* Dark mode adjustments */
+            @media (prefers-color-scheme: dark) {
+                .term-item,
+                .definition-item {
+                    background: var(--card-bg);
+                    border-color: rgba(255, 255, 255, 0.1);
+                }
+
+                .score-container {
+                    background: var(--card-bg);
+                }
+            }
+
+            /* Accessibility improvements */
+            .button:focus,
+            .term-item:focus,
+            .definition-item:focus {
+                outline: 2px solid var(--primary-color);
+                outline-offset: 2px;
+            }
+
+            /* Smooth animations for all transitions */
+            .term-item,
+            .definition-item,
+            .button,
+            .score-container {
+                will-change: transform;
+            }
+
+            /* Print styles */
+            @media print {
+                body {
+                    background: white;
+                    color: black;
+                }
+
+                .container {
+                    box-shadow: none;
+                    padding: 0;
+                }
+
+                .button {
+                    display: none;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>تعاريف كيمياء 2-1</h1>
+                <p class="subtitle">صنع بجبروت من قبل قياصرة الفلاح</p>
+            </div>
+
+            <div class="stats">
+                <div class="score-container">
+                    <span class="score-label">النقاط:</span>
+                    <span id="score" class="score-value">0</span>
+                </div>
+            </div>
+
+            <div id="gameContent">
+                <div class="terms-grid" id="terms"></div>
+                <br />
+                <div class="definitions-grid" id="definitions"></div>
+            </div>
+
+            <button id="restart" class="button">إعادة اللعب</button>
+        </div>
+
+        <script>
+            const terms = [
+                { term: "الذرة", definition: "أصغر جزء من العنصر يحتفظ بخواصه الكيميائية" },
+                { term: "العنصر", definition: "مادة نقية تتكون من نوع واحد من الذرات" },
+                { term: "المركب", definition: "مادة نقية تتكون من اتحاد عنصرين أو أكثر" },
+                { term: "الإلكترون", definition: "جسيم سالب الشحنة يدور حول نواة الذرة" },
+                { term: "البروتون", definition: "جسيم موجب الشحنة يوجد في نواة الذرة" },
+                { term: "التركيب النسبي المئوي", definition: "النسب المئوية بالكتلة لكل العناصر في المركب" },
+                { term: "الصيغة الأولية", definition: "الصيغة التي تبين أصغر نسبة عددية صحيحة لمولات العناصر في المركبات" },
+                { term: "الصيغة الجزيئية", definition: "الصيغة التي تعطي العدد الفعلي للذرات من كل عنصر في جزيء واحد من المادة" },
+                { term: "الأملاح المائية", definition: "مركب يحتوي على عدد معين من جزيئات الماء المرتبطة بذراته" },
+                { term: "الحسابات الكيميائية", definition: "دراسة العلاقات الكمية بين المواد المتفاعلة والمواد الناتجة في التفاعل الكيميائي" },
+                { term: "قانون حفظ الكتلة", definition: "أن المادة لا تفنى ولا تستحدث في التفاعل الكيميائي إلا بقدرة الله تعالى" },
+                { term: "النسبة المولية", definition: "نسبة بين أعداد المولات لأي مادتين في المعادلة الكيميائية الموزونة" },
+                { term: "المادة المحددة للتفاعل", definition: "المادة التي تستهلك كليًا في التفاعل، وتحدد كمية المادة الناتجة" },
+                { term: "المادة الفائضة", definition: "المواد المتبقية بعد التفاعل دون استهلاك" },
+                { term: "المردود النظري", definition: "أكبر كمية من الناتج يمكن الحصول عليها من كمية المادة المتفاعلة المعطاة" },
+                { term: "المردود الفعلي", definition: "كمية المادة الناتجة عند إجراء التفاعل الكيميائي عمليًا" },
+                { term: "نسبة المردود المئوية", definition: "نسبة المردود الفعلي إلى النظري في صورة نسبة مئوية" },
+                { term: "الحجم الذري", definition: "مقدار اقتراب ذرة من ذرة أخرى مجاورة لها" },
+                { term: "نصف قطر الذرة للفلزات", definition: "نصف المسافة بين نواتين متجاورتين في التركيب البلوري للعنصر" },
+                { term: "نصف القطر الذري للافلزات", definition: "نصف المسافة بين نوى الذرات المتطابقة والمتحدة كيميائيًا بروابط فيما بينها" },
+                { term: "الأيون", definition: "ذرة أو مجموعة ذرية لها شحنة موجبة أو سالبة" },
+                { term: "طاقة التأين", definition: "الطاقة اللازمة لانتزاع إلكترون من ذرة العنصر في حالته الغازية" },
+                { term: "الكهروسالبية", definition: "مدى قابلية ذرات العناصر على جذب الإلكترونات في الرابطة الكيميائية" },
+                { term: "القاعدة الثمانية", definition: "أن الذرة تكتسب الإلكترونات أو تخسرها أو تشارك بها" },
+                { term: "الضوء", definition: "نوع من الإشعاع الكهرومغناطيسي، له طبيعة ثنائية وموجية وجسيمية" },
+                { term: "الإشعاع الكهرومغناطيسي", definition: "شكل من أشكال الطاقة يسلك السلوك الموجي في أثناء انتقاله في الفضاء" },
+                { term: "الطول الموجي", definition: "أقصر مسافة بين قمتين متتاليتين أو قاعين متتاليين" },
+                { term: "التردد", definition: "عدد الموجات التي تعبر نقطة محددة خلال ثانية" },
+                { term: "سعة الموجة", definition: "مقدار ارتفاع القمة أو انخفاض القاع عن مستوى خط الأصل" },
+                { term: "الطيف الكهرومغناطيسي", definition: "سلسلة من الموجات المتصلة التي تسير بسرعة الضوء، والتي تختلف في التردد والطول الموجي فقط" },
+                { term: "الكم", definition: "أقل كمية من الطاقة يمكن أن تكتسبها الذرة أو تفقدها" },
+                { term: "التأثير الكهروضوئي", definition: "تنبعث الإلكترونات المسماة الفوتوإلكترونات من سطح الفلز عندما يسقط عليه ضوء يتردد مساو لتردد الفوتون، أو أعلى منه" },
+                { term: "الفوتون", definition: "جسيم لا كتلة له يحمل كمًا من الطاقة" },
+                { term: "طيف الانبعاث الذري", definition: "مجموعة من ترددات الموجات الكهرومغناطيسية المنطلقة من ذرات العناصر" },
+                { term: "حالة الاستقرار", definition: "الحالة التي تكون إلكترونات الذرة فيها أدنى طاقة" },
+                { term: "حالة الإثارة", definition: "عندما تكتسب إلكترونات الذرة الطاقة فتصبح في حالة إثارة" },
+                { term: "مبدأ دي برولي", definition: "اعتقد دي برولي أن للجسيمات المتحركة خصائص الموجات" },
+                { term: "مبدأ هايزنبرج للشك (عدم التأكد)", definition: "ينص على أنه من المستحيل معرفة سرعة جسيم ومكانه في الوقت نفسه بدقة" },
+                { term: "النموذج الميكانيكي للذرة", definition: "النموذج الذي يعامل الإلكترونات على أنها موجات" },
+                { term: "السحابة الإلكترونية", definition: "هي المنطقة الفراغية الثلاثية الأبعاد حول النواة، والتي يحتمل تواجد الإلكترونات فيها في جميع الاتجاهات" },
+                { term: "المستوى", definition: "الموقع المحتمل لوجود إلكترون" },
+                { term: "التوزيع الإلكتروني", definition: "ترتيب الإلكترونات في الذرة" },
+                { term: "مبدأ أوفباو (البناء التصاعدي)", definition: "أن كل إلكترون يشغل المستوى الأقل طاقة" },
+                { term: "مبدأ باولي", definition: "أن عدد إلكترونات المستوى الفرعي الواحد لا يزيد على إلكترونين، ويدور كل منهما باتجاه معاكس للآخر" },
+                { term: "قاعدة هوند", definition: "تُملأ المستويات الفرعية بالإلكترونات فرادًا أولاً قبل أن يحدث لها الازدواج" },
+                { term: "إلكترونات التكافؤ", definition: "إلكترونات المستوى الخارجي للذرة (مستوى الطاقة الرئيس الأخير)" },
+                { term: "التكافؤ", definition: "عدد الإلكترونات التي تفقدها أو تكسبها أو تشارك بها ذرة العنصر أثناء التفاعل" },
+                { term: "التمثيل النقطي للإلكترونات", definition: "طريقة تمثل إلكترونات التكافؤ حول رمز العنصر باستخدام النقط" },
+                { term: "الرابطة الكيميائية", definition: "قوة تجاذب تنشأ بين ذرتين أو أكثر من خلال فقد الذرة للإلكترونات أو اكتسابها أو المساهمة فيها بالاشتراك مع ذرة أو ذرات أخرى" },
+                { term: "الأيون الموجب (الكاتيون)", definition: "الأيون الذي يحمل شحنة موجبة" },
+                { term: "الأيون السالب (الأنيون)", definition: "الأيون الذي له شحنة سالبة" },
+                { term: "الأيون", definition: "ذرة أو مجموعة ذرات مترابطة لها شحنة موجبة أو سالبة" },
+                { term: "الرابطة الأيونية", definition: "الرابطة التي تنتج عندما يتحد فلز ولا فلز" },
+                { term: "المركبات الأيونية", definition: "المركبات التي تحتوي روابط أيونية" },
+                {
+                    term: "الشبكة البلورية",
+                    definition: "تركيب ثلاثي الأبعاد يتكون من جسيمات بحيث يحيط الأيون الموجب عدد من الأيونات السالبة، ويحيط الأيون السالب عدد من الأيونات الموجبة، وتختلف البلورات في شكلها وفقا لاختلاف حجوم الأيونات وأعدادها",
+                },
+                { term: "الإلكتروليت", definition: "المركب الأيوني الذي يوصل محلوله المائي التيار الكهربائي" },
+                { term: "طاقة الشبكة البلورية", definition: "الطاقة التي تلزم لفصل 1 mol من المركب الأيوني" },
+                { term: "وحدة الصيغة الكيميائية", definition: "أبسط نسبة يمكن أن تمثل الأيونات في المركب الأيوني" },
+                { term: "الأيون الأحادي الذرة", definition: "الأيون الذي يتكون من ذرة واحدة فقط" },
+                { term: "أيونات عديدة الذرات", definition: "الأيون الذي يتكون من ذرتين أو أكثر ويسلك سلوك الأيون الواحد الذي يحمل شحنة موجبة أو سالبة" },
+                { term: "عدد التأكسد (التكافؤ – الشحنة)", definition: "الشحنة الموجبة أو السالبة التي يحملها أيون أحادي الذرة" },
+                { term: "الأيون الأكسجيني السالب", definition: "أيون عديد الذرات، يتكون غالبا من لا فلزي يرتبط مع ذرة أو أكثر من الأكسجين" },
+                { term: "الرابطة الفلزية", definition: "قوة التجاذب بين الأيونات الموجبة في الفلز والإلكترونات حرة الحركة" },
+                { term: "السبيكة", definition: "مخلوط من عدة عناصر لها خواص فلزية، وتتكون عادة من عناصر متماثلة الحجوم، أو يكون أحد العناصر أصغر كثيرا من العنصر الأخر" },
+                { term: "الرابطة التساهمية", definition: "الرابطة التي تنتج عن التشارك بإلكترونات التكافؤ" },
+                { term: "الرابطة التساهمية الأحادية", definition: "اشتراك زوج واحد من الإلكترونات في تكوين رابطة تساهمية، كما في جزيء الهيدروجين" },
+                { term: "الرابطة التساهمية الثنائية", definition: "اشتراك ذرتان بزوجين من الإلكترونات فيما بينهما" },
+                { term: "الرابطة التساهمية الثلاثية", definition: "اشتراك ذرتان في ثلاثة أزواج من الإلكترونات فيما بينهما" },
+                { term: "الجزيء", definition: "يتكون عندما ترتبط ذرتان أو أكثر برابطة تساهمية" },
+                { term: "تركيب لويس", definition: "نموذج يتم فيه تمثيل إلكترونات التكافؤ فقط على شكل نقاط أو خطوط للإلكترونات المرتبطة" },
+                { term: "الرابطة سيجما", definition: "الرابطة التساهمية الأحادية الناتجة عن اشتراك زوج من الإلكترونات نتيجة التداخل المباشر لمجالات الذرات (رأسا مقابل رأس)" },
+                { term: "الرابطة باي", definition: "الرابطة المتكونة من تداخل مستويات p الفرعية تداخلا متوازيا وتشترك في الإلكترونات" },
+                { term: "التفاعل الماص للطاقة", definition: "التفاعل الكيميائي الذي يحتاج إلى كمية من الطاقة لكسر الروابط الموجودة في المواد المتفاعلة أكبر من الطاقة التي تنبعث عندما تتكون روابط جديدة في جزيئات المواد الناتجة" },
+                { term: "التفاعل الطارد للطاقة", definition: "التفاعل الكيميائي الذي يرافقه انبعاث طاقة أكبر من الطاقة اللازمة لكسر الروابط في جزيئات المواد المتفاعلة" },
+                { term: "الصيغة البنائية", definition: "النموذج الجزيئي الذي يستخدم الرموز والروابط لتوضيح المواقع النسبية للذرات، ويمكن التنبؤ بالعديد من الصيغ البنائية للجزيئات بعد رسم تركيب لويس لها" },
+                { term: "الرنين", definition: "الحالة التي تحدث عند وجود أكثر من تركيب لويس للمركب أو الأيون" },
+                { term: "الرابطة التساهمية التناسقية", definition: "الرابطة التساهمية التي تقدم فيها إحدى الذرات زوجا من الإلكترونات لذرة أخرى أو أيون بحاجة إلى زوج الإلكترونات للوصول إلى حالة الاستقرار" },
+                { term: "التهجين", definition: "الطريقة التي يتم فيها خلط المجالات الفرعية لتكوين مجالات جديدة مهجنة ومتماثلة" },
+                { term: "الرابطة التساهمية القطبية", definition: "الرابطة التي تنشأ عندما لا تكون المشاركة بالإلكترونات متساوية" },
+                { term: "الرابطة التساهمية غير القطبية", definition: "تنشأ بين ذرتين متماثلتين يكون فرق الكهروسالبية لإلكترونات الرابطة صفرا" },
+            ];
+
+            class ChemistryGame {
+                constructor() {
+                    this.state = {
+                        matchedPairs: [],
+                        score: 0,
+                        selectedTerm: null,
+                        availableTerms: [...terms],
+                        currentTopTerms: [],
+                        currentBottomTerms: [],
+                        wrongAttempts: {},
+                    };
+                    this.initializeGame();
+                }
+
+                shuffleArray(array) {
+                    for (let i = array.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [array[i], array[j]] = [array[j], array[i]];
+                    }
+                    return array;
+                }
+
+                selectTerms() {
+                    const shuffledTerms = this.shuffleArray([...this.state.availableTerms]);
+                    this.state.currentBottomTerms = shuffledTerms.slice(0, 6);
+                    this.state.currentTopTerms = [...this.state.currentBottomTerms, ...shuffledTerms.slice(6, 12)];
+                    this.state.currentTopTerms = this.shuffleArray(this.state.currentTopTerms);
+                }
+
+                renderGame() {
+                    this.renderTerms();
+                    this.renderDefinitions();
+                    this.setupClickHandlers();
+                    document.getElementById("score").textContent = this.state.score;
+                }
+
+                renderTerms() {
+                    const termsContainer = document.getElementById("terms");
+                    termsContainer.innerHTML = this.state.currentTopTerms
+                        .map(
+                            (item) => `
+                <div class="term-item ${this.state.matchedPairs.includes(item.term) ? "matched" : ""}"
+                     data-term="${item.term}">
+                    ${item.term}
+                </div>
+            `
+                        )
+                        .join("");
+                }
+
+                renderDefinitions() {
+                    const definitionsContainer = document.getElementById("definitions");
+                    definitionsContainer.innerHTML = this.shuffleArray([...this.state.currentBottomTerms])
+                        .map(
+                            (item) => `
+                <div class="definition-item ${this.state.matchedPairs.includes(item.term) ? "matched" : ""}"
+                     data-definition="${item.definition}" data-term="${item.term}">
+                    ${item.definition}
+                </div>
+            `
+                        )
+                        .join("");
+                }
+
+                setupClickHandlers() {
+                    if (this.state.selectedTerm) {
+                        this.state.selectedTerm.classList.remove("selected");
+                        this.state.selectedTerm = null;
+                    }
+
+                    document.querySelectorAll(".term-item:not(.matched)").forEach((term) => {
+                        term.addEventListener("click", () => {
+                            if (this.state.selectedTerm) {
+                                this.state.selectedTerm.classList.remove("selected");
+                            }
+                            term.classList.add("selected");
+                            this.state.selectedTerm = term;
+                        });
+                    });
+
+                    document.querySelectorAll(".definition-item:not(.matched)").forEach((definition) => {
+                        definition.addEventListener("click", () => this.checkMatch(definition));
+                    });
+                }
+
+                checkMatch(definition) {
+                    if (!this.state.selectedTerm) return;
+
+                    const termValue = this.state.selectedTerm.getAttribute("data-term");
+                    const correctTerm = definition.getAttribute("data-term");
+
+                    if (termValue === correctTerm) {
+                        this.handleCorrectMatch(termValue, definition);
+                    } else {
+                        this.handleWrongMatch(termValue, definition);
+                    }
+                }
+
+                handleWrongMatch(termValue, definition) {
+                    this.state.wrongAttempts[termValue] = (this.state.wrongAttempts[termValue] || 0) + 1;
+                    this.state.score = Math.max(0, this.state.score - 5);
+                    document.getElementById("score").textContent = this.state.score;
+
+                    const termElement = this.state.selectedTerm;
+                    termElement.classList.add("wrong");
+                    definition.classList.add("wrong");
+
+                    if (this.state.wrongAttempts[termValue] >= 3) {
+                        setTimeout(() => {
+                            swal({
+                                title: "تنبيه!",
+                                text: `الإجابة الصحيحة هي:\n${definition.getAttribute("data-definition")}`,
+                                icon: "info",
+                                button: "فهمت",
+                            });
+                            this.state.wrongAttempts[termValue] = 0;
+                        }, 1000);
+                    }
+
+                    setTimeout(() => {
+                        termElement.classList.remove("wrong", "selected");
+                        definition.classList.remove("wrong");
+                        this.state.selectedTerm = null;
+                    }, 1000);
+                }
+
+                handleCorrectMatch(termValue, definition) {
+                    this.state.matchedPairs.push(termValue);
+                    const wrongAttempts = this.state.wrongAttempts[termValue] || 0;
+                    const points = Math.max(10 - wrongAttempts * 2, 5);
+                    this.state.score += points;
+
+                    this.state.selectedTerm.classList.add("matched");
+                    definition.classList.add("matched");
+                    document.getElementById("score").textContent = this.state.score;
+
+                    if (this.state.matchedPairs.length === this.state.currentBottomTerms.length) {
+                        this.handleGameComplete();
+                    }
+
+                    this.state.selectedTerm.classList.remove("selected");
+                    this.state.selectedTerm = null;
+                }
+
+                handleGameComplete() {
+                    const totalPossibleScore = this.state.currentBottomTerms.length * 10;
+                    const percentage = Math.round((this.state.score / totalPossibleScore) * 100);
+
+                    setTimeout(() => {
+                        swal({
+                            title: "تهانينا!",
+                            text: `أكملت اللعبة بنجاح!\nالنقاط: ${this.state.score}\nالنسبة المئوية: ${percentage}%`,
+                            icon: "success",
+                            buttons: {
+                                again: "العب مرة أخرى",
+                                continue: "استمر بمصطلحات جديدة",
+                            },
+                        }).then((value) => {
+                            if (value === "continue" && this.state.availableTerms.length >= 6) {
+                                this.continueWithNewTerms();
+                            } else {
+                                this.restartGame();
+                            }
+                        });
+                    }, 500);
+                }
+
+                setupEventListeners() {
+                    document.getElementById("restart").addEventListener("click", () => this.restartGame());
+                }
+
+                initializeGame() {
+                    this.selectTerms();
+                    this.setupEventListeners();
+                    this.renderGame();
+                }
+
+                continueWithNewTerms() {
+                    this.state.matchedPairs = [];
+                    this.state.selectedTerm = null;
+                    this.state.wrongAttempts = {};
+                    this.selectTerms();
+                    this.renderGame();
+                }
+
+                restartGame() {
+                    this.state = {
+                        matchedPairs: [],
+                        score: 0,
+                        selectedTerm: null,
+                        availableTerms: [...terms],
+                        currentTopTerms: [],
+                        currentBottomTerms: [],
+                        wrongAttempts: {},
+                    };
+                    this.selectTerms();
+                    this.renderGame();
+                }
+            }
+
+            // بدء اللعبة عند تحميل الصفحة
+            window.addEventListener("load", () => {
+                new ChemistryGame();
+            });
+        </script>
+    </body>
+</html>
